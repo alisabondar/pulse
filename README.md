@@ -1,10 +1,10 @@
-# Patient Dashboard
+# CipherChart
 
 A clinician-facing patient dashboard, built HIPAA-ready: encrypted at rest, audited on every view,
 and an AI summary that can't leak who the patient is. All data is synthetic.
 
 ```bash
-git clone https://github.com/alisabondar/acertener.git && cd acertener && ./dev.sh
+git clone https://github.com/alisabondar/cipherchart.git && cd cipherchart && ./dev.sh
 ```
 
 ## Run locally

@@ -3,7 +3,7 @@
 **Docker is the only prerequisite.**
 
 ```bash
-git clone https://github.com/alisabondar/acertener.git && cd acertener && ./dev.sh
+git clone https://github.com/alisabondar/cipherchart.git && cd cipherchart && ./dev.sh
 ```
 
 The first run builds the images, generates encryption keys, and seeds 10,000 synthetic patients
