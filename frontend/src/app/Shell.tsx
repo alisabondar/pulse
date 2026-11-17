@@ -77,7 +77,7 @@ export function Shell() {
         <Sidebar collapsible="icon">
           <SidebarHeader className="flex-row items-center justify-between px-3 py-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
             <span className="truncate px-1 text-[15px] font-semibold group-data-[collapsible=icon]:hidden">
-              Acertener
+              CipherChart
             </span>
             <SidebarTrigger className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
           </SidebarHeader>
