@@ -22,7 +22,7 @@ export function ContentSkeleton() {
   );
 }
 
-/** The whole app while it starts: sidebar with its navigation, the header, and the page. */
+/** The whole app while it starts: the navigation rail, the app bar, and the page. */
 export function AppSkeleton() {
   return (
     <div
@@ -32,25 +32,23 @@ export function AppSkeleton() {
       className="flex min-h-screen bg-background"
     >
       <div
-        data-testid="sidebar-skeleton"
-        className="hidden w-64 shrink-0 space-y-6 border-r bg-sidebar p-4 md:block"
+        data-testid="rail-skeleton"
+        className="flex w-20 shrink-0 flex-col items-center gap-6 bg-rail py-5"
       >
-        <Skeleton className="h-6 w-32" />
-        <div className="space-y-3">
+        <Skeleton className="size-12 rounded-2xl" />
+        <div className="flex flex-col items-center gap-3">
           {Array.from({ length: 3 }, (_, i) => (
-            <Skeleton key={i} className="h-8 w-full" />
+            <Skeleton key={i} className="h-12 w-14 rounded-full" />
           ))}
         </div>
       </div>
       <div className="flex-1">
-        <div
-          data-testid="header-skeleton"
-          className="flex h-14 items-center justify-end gap-3 border-b px-4"
-        >
-          <Skeleton className="size-8 rounded-full" />
-          <Skeleton className="h-4 w-40" />
+        <div data-testid="header-skeleton" className="flex h-20 items-center gap-4 px-6 lg:px-8">
+          <Skeleton className="h-12 w-full max-w-xl rounded-full" />
+          <Skeleton className="ml-auto size-8 shrink-0 rounded-full" />
+          <Skeleton className="h-4 w-40 shrink-0" />
         </div>
-        <div className="mx-auto w-full max-w-7xl px-8 py-6">
+        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
           <ContentSkeleton />
         </div>
       </div>

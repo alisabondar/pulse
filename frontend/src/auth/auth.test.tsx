@@ -19,11 +19,11 @@ async function navLinks() {
 }
 
 describe("demo identity", () => {
-  it("shows the app's layout while it loads: sidebar, header, and cards", async () => {
+  it("shows the app's layout while it loads: navigation rail, app bar, and cards", async () => {
     renderApp("/");
 
     const loading = screen.getByRole("status", { name: "Loading the dashboard" });
-    expect(within(loading).getByTestId("sidebar-skeleton")).toBeInTheDocument();
+    expect(within(loading).getByTestId("rail-skeleton")).toBeInTheDocument();
     expect(within(loading).getByTestId("header-skeleton")).toBeInTheDocument();
     expect(within(loading).getAllByTestId("card-skeleton").length).toBeGreaterThanOrEqual(4);
     await banner();

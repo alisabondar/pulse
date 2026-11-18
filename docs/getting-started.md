@@ -3,7 +3,7 @@
 **Docker is the only prerequisite.**
 
 ```bash
-git clone https://github.com/alisabondar/cipherchart.git && cd cipherchart && ./dev.sh
+git clone https://github.com/alisabondar/pulse.git && cd pulse && ./dev.sh
 ```
 
 The first run builds the images, generates encryption keys, and seeds 10,000 synthetic patients
@@ -26,12 +26,14 @@ their own key: the free tier's rate limit is per key. If you share one, send it 
 
 1. **Run the one-liner** above.
 2. **My day:** Dr. Chen's schedule for today. Click a visit card to open the chart.
-3. **The chart:** the AI summary comes first, then problems and allergies; tabs for notes, vitals,
-   allergies and conditions, and the access history. Finalize a note and try to edit it.
+3. **The chart:** the overview puts the AI summary and recent notes beside the blood pressure
+   trend, latest vitals, problems, and allergies. Today's visits run along the top, so the next
+   patient is one tap away. Press **New note**, finalize it, and try to edit it.
 4. **Switch personas** in "Viewing as": a nurse can record vitals but not diagnoses; front desk sees
    contact details only; the admin sees the audit log. The navigation changes and the API refuses
    anything the role can't do.
-5. **Search** on the Patients page and look at the address bar: what you typed is never in the URL.
+5. **Search:** press `/` anywhere and type a last name or MRN, or use the fuller search on the
+   Patients page. Look at the address bar: what you typed is never in the URL.
 6. **See the encryption:** `./dev.sh proof` prints the app's view of a patient next to the raw
    database row, then searches a full `pg_dump` for the name and finds 0 matches.
 7. **Run the tests:** `./dev.sh test` (backend and frontend), `./dev.sh test e2e`, and

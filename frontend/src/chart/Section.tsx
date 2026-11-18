@@ -26,7 +26,7 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section aria-label={title} className="space-y-3 rounded-xl border bg-card p-4">
+    <section aria-label={title} className="space-y-3 rounded-xl bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <SectionTitle>{title}</SectionTitle>
         {canEdit ? (

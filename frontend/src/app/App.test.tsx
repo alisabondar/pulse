@@ -1,5 +1,4 @@
-import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, screen, within } from "@testing-library/react";
 import type { RouteObject } from "react-router";
 import { describe, expect, it } from "vite-plus/test";
 
@@ -13,29 +12,23 @@ import { Shell } from "./Shell";
 const nav = () => screen.findByRole("navigation", { name: "Main" });
 
 describe("app shell", () => {
-  it("shows the main navigation in the sidebar", async () => {
+  it("shows the main navigation as icons that each keep their name", async () => {
     renderApp("/");
 
-    expect((await nav()).closest('[data-slot="sidebar"]')).not.toBeNull();
+    const links = within(await nav()).getAllByRole("link");
+
+    // The labels are visually hidden, not removed, so screen readers still announce them.
+    expect(links.map((link) => link.textContent)).toEqual(["My day", "Patients", "New patient"]);
+    expect(links[0]).toHaveAttribute("aria-current", "page");
   });
 
-  it("collapses the sidebar to icons and expands it again", async () => {
-    const user = userEvent.setup();
+  it("names a navigation icon in a tooltip when it has keyboard focus", async () => {
     renderApp("/");
-    await nav();
-    const sidebar = () => document.querySelector('[data-slot="sidebar"][data-state]');
-    // The toggle lives in the sidebar itself, next to the product name.
-    const toggle = () =>
-      within(document.querySelector<HTMLElement>('[data-slot="sidebar-header"]')!).getByRole(
-        "button",
-        { name: "Toggle Sidebar" },
-      );
+    const patients = within(await nav()).getByRole("link", { name: "Patients" });
 
-    await user.click(toggle());
-    expect(sidebar()).toHaveAttribute("data-state", "collapsed");
+    act(() => patients.focus());
 
-    await user.click(toggle());
-    expect(sidebar()).toHaveAttribute("data-state", "expanded");
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Patients");
   });
 
   it.each([

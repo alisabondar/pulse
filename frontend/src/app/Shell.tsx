@@ -5,21 +5,11 @@ import { Suspense } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 
 import { type Permission, useCurrentUser } from "@/auth/context";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { PulseMark } from "@/components/PulseMark";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
+import { GlobalSearch } from "./GlobalSearch";
 import { UserMenu } from "./UserMenu";
 
 /**
@@ -71,44 +61,24 @@ export function Shell() {
   const { me, switchingTo } = useCurrentUser();
   const sections = NAV.filter((item) => me.permissions.includes(item.permission));
   return (
-    <TooltipProvider>
-      <Toaster position="bottom-right" />
-      <SidebarProvider>
-        <Sidebar collapsible="icon">
-          <SidebarHeader className="flex-row items-center justify-between px-3 py-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
-            <span className="truncate px-1 text-[15px] font-semibold group-data-[collapsible=icon]:hidden">
-              CipherChart
-            </span>
-            <SidebarTrigger className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroup>
-              <nav aria-label="Main">
-                <SidebarMenu>
-                  {sections.map(({ to, label, icon: Icon, owns }) => {
-                    const active = owns(path);
-                    return (
-                      <SidebarMenuItem key={to}>
-                        <SidebarMenuButton asChild isActive={active} tooltip={label}>
-                          <Link to={to} aria-current={active ? "page" : undefined}>
-                            <Icon />
-                            <span>{label}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </nav>
-            </SidebarGroup>
-          </SidebarContent>
-          <SidebarRail />
-        </Sidebar>
-        <SidebarInset>
-          <header className="flex h-14 items-center gap-3 border-b border-border px-4">
+    <TooltipProvider delayDuration={300}>
+      {/* Bottom centre, M3's snackbar spot, so toasts never sit under the chart's New note button. */}
+      <Toaster position="bottom-center" />
+      <div className="flex min-h-svh">
+        <NavigationRail sections={sections} path={path} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-30 flex h-20 items-center gap-4 bg-background px-6 lg:px-8">
+            {/* The Patients page has its own, fuller search; one search box per screen. */}
+            {me.permissions.includes("VIEW_DEMOGRAPHICS") &&
+            !switchingTo &&
+            path !== "/patients" ? (
+              <GlobalSearch />
+            ) : (
+              <div className="flex-1" />
+            )}
             <UserMenu />
           </header>
-          <div className="mx-auto w-full max-w-7xl px-8 py-6">
+          <main className="mx-auto w-full max-w-7xl px-6 pb-24 lg:px-8">
             {switchingTo ? (
               <SwitchingPersona personaName={switchingTo.name} />
             ) : (
@@ -116,10 +86,56 @@ export function Shell() {
                 <Outlet />
               </Suspense>
             )}
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+          </main>
+        </div>
+      </div>
     </TooltipProvider>
+  );
+}
+
+/**
+ * An M3 navigation rail with icons only, so the chart keeps the width on an iPad. Each icon
+ * still has its name: a tooltip on hover or focus, and text a screen reader announces.
+ */
+function NavigationRail({ sections, path }: { sections: typeof NAV; path: string }) {
+  return (
+    <aside className="sticky top-0 flex h-svh w-20 shrink-0 flex-col items-center gap-6 bg-rail py-5">
+      <span>
+        <PulseMark />
+        <span className="sr-only">Pulse</span>
+      </span>
+      <nav aria-label="Main">
+        <ul className="flex flex-col items-center gap-3">
+          {sections.map(({ to, label, icon: Icon, owns }) => {
+            const active = owns(path);
+            return (
+              <li key={to}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      to={to}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "grid h-12 w-14 place-items-center rounded-full text-muted-foreground transition-colors",
+                        "hover:bg-foreground/8 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                        active &&
+                          "bg-rail-indicator text-rail-indicator-foreground hover:bg-rail-indicator",
+                      )}
+                    >
+                      <Icon className="size-6" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
+                      <span className="sr-only">{label}</span>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={8}>
+                    {label}
+                  </TooltipContent>
+                </Tooltip>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </aside>
   );
 }
 

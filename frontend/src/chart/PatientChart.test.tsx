@@ -8,9 +8,11 @@ import {
   CHEN,
   makeAllergy,
   makeCondition,
+  makeDay,
   makeDetail,
   makeNote,
   makeProblem,
+  makeVisit,
   makeVitals,
   OKAFOR,
   type Note,
@@ -86,9 +88,10 @@ describe("patient chart", () => {
 
     const header = await screen.findByRole("region", { name: "Patient" });
     expect(header).toHaveTextContent("Osei, Daniel");
-    expect(header).toHaveTextContent("04/02/1963 (63y)");
-    expect(header).toHaveTextContent("MRN-100008");
-    expect(header).toHaveTextContent("Blood type O+");
+    expect(header).toHaveTextContent("Age63");
+    expect(header).toHaveTextContent("DOB04/02/1963");
+    expect(header).toHaveTextContent("MRNMRN-100008");
+    expect(header).toHaveTextContent("BloodO+");
     expect(within(header).getByRole("link", { name: "Edit details" })).toHaveAttribute(
       "href",
       "/patients/44444444-4444-4444-8444-000000000001/edit",
@@ -134,7 +137,7 @@ describe("patient chart", () => {
   });
 });
 
-it("opens on an overview of the AI summary, then problems and allergies; contact has its own tab", async () => {
+it("opens on an overview: summary and notes, then blood pressure, problems and allergies; contact has its own tab", async () => {
   const user = userEvent.setup();
   chartIs();
   open();
@@ -152,11 +155,118 @@ it("opens on an overview of the AI summary, then problems and allergies; contact
   const titles = within(overview)
     .getAllByRole("heading", { level: 2 })
     .map((h) => h.textContent);
-  expect(titles).toEqual(["AI summary", "Active problems", "Active allergies"]);
+  expect(titles).toEqual([
+    "AI summary",
+    "Recent notes",
+    "Blood pressure",
+    "Active problems",
+    "Active allergies",
+  ]);
   expect(overview).not.toHaveTextContent("Springfield");
 
   await user.click(screen.getByRole("tab", { name: "Vitals" }));
   expect(await screen.findByRole("region", { name: "Latest vitals" })).toHaveTextContent("142/88");
+});
+
+describe("working the chart", () => {
+  it("shows today's visits above the chart, this one selected, and its visit in the banner", async () => {
+    chartIs();
+    server.use(
+      http.get("/api/v1/visits/today", () =>
+        HttpResponse.json(
+          makeDay([
+            makeVisit(-60, {
+              status: "checked_in",
+              reason: "BP check",
+              patient: { ...makeVisit(0).patient, id: patient.id, last_name: "Osei" },
+            }),
+            makeVisit(30),
+          ]),
+        ),
+      ),
+    );
+    open();
+
+    const strip = await screen.findByRole("navigation", { name: "Today's visits" });
+    const chips = within(strip).getAllByRole("link");
+    expect(chips).toHaveLength(2);
+    expect(chips[0]).toHaveAttribute("aria-current", "page");
+    expect(chips[1]).not.toHaveAttribute("aria-current");
+    const banner = screen.getByRole("region", { name: "Patient" });
+    expect(banner).toHaveTextContent("BP check");
+    expect(banner).toHaveTextContent("Checked in");
+  });
+
+  it("opens a blank note on the Notes tab from the New note button", async () => {
+    const user = userEvent.setup();
+    chartIs();
+    open();
+
+    await user.click(await screen.findByRole("button", { name: "New note" }));
+
+    expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("aria-selected", "true");
+    expect(await screen.findByRole("textbox", { name: "Note" })).toHaveFocus();
+  });
+
+  it("links each overview card to its full tab", async () => {
+    const user = userEvent.setup();
+    chartIs();
+    open();
+
+    await user.click(await screen.findByRole("button", { name: "All vitals" }));
+    expect(screen.getByRole("tab", { name: "Vitals" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("tab", { name: "Overview" }));
+    await user.click(await screen.findByRole("button", { name: "All notes" }));
+    expect(screen.getByRole("tab", { name: "Notes" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("charts several blood pressure readings and flags a high latest one", async () => {
+    chartIs();
+    server.use(
+      http.get(`${base}/vitals`, () =>
+        HttpResponse.json({
+          items: [
+            makeVitals({
+              id: "v1",
+              taken_at: "2025-07-03T06:00:00Z",
+              bp_systolic: 126,
+              bp_diastolic: 80,
+            }),
+            makeVitals({
+              id: "v2",
+              taken_at: "2026-05-08T14:00:00Z",
+              bp_systolic: 138,
+              bp_diastolic: 84,
+            }),
+            makeVitals({
+              id: "v3",
+              taken_at: "2026-11-18T07:00:00Z",
+              bp_systolic: 152,
+              bp_diastolic: 92,
+            }),
+          ],
+        }),
+      ),
+    );
+    open();
+
+    const card = await screen.findByRole("region", { name: "Blood pressure" });
+    expect(
+      await within(card).findByRole("img", { name: /last 3 readings: 126\/80, 138\/84, 152\/92/ }),
+    ).toBeVisible();
+    expect(card).toHaveTextContent("High");
+  });
+
+  it("waits for a second reading before drawing a trend", async () => {
+    chartIs();
+    open();
+
+    const card = await screen.findByRole("region", { name: "Blood pressure" });
+    expect(
+      await within(card).findByText("The trend appears after the next reading."),
+    ).toBeVisible();
+    expect(within(card).queryByRole("img")).toBeNull();
+  });
 });
 
 describe("notes", () => {

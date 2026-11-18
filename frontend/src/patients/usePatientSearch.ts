@@ -11,8 +11,11 @@ const SEARCH_DEBOUNCE_MS = 300;
  * Terms identify patients, so they live only here in component state, never in the URL.
  * `onEdit` runs on every change, e.g. so a list can go back to its first page.
  */
-export function usePatientSearch({ onEdit }: { onEdit?: () => void } = {}) {
-  const [text, setTextState] = useState("");
+export function usePatientSearch({
+  onEdit,
+  initialText = "",
+}: { onEdit?: () => void; initialText?: string } = {}) {
+  const [text, setTextState] = useState(initialText);
   const [dob, setDobState] = useState("");
   const [dobIncomplete, setDobIncomplete] = useState(false);
   const textInput = useRef<HTMLInputElement>(null);

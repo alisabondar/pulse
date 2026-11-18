@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/roboto-flex";
 
-@custom-variant dark (&:is(.dark *));
+/* Dark follows the system setting: a dim exam room at night gets the dark scheme on its own. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
 @theme inline {
   --color-status-active: var(--status-active);
@@ -12,15 +13,13 @@
   --color-severe: var(--severe);
   --color-brand: var(--brand);
   --font-heading: var(--font-sans);
-  --font-sans: "Geist Variable", sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
+  --font-sans: "Roboto Flex Variable", "Roboto", system-ui, sans-serif;
+  --color-rail: var(--rail);
+  --color-rail-indicator: var(--rail-indicator);
+  --color-rail-indicator-foreground: var(--rail-indicator-foreground);
+  --color-fab: var(--fab);
+  --color-fab-foreground: var(--fab-foreground);
+  --color-surface: var(--surface);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -54,79 +53,85 @@
 }
 
 :root {
-  /* Neutral slate chrome so the only saturated colours on screen carry clinical meaning. */
-  --background: #f1f5f9;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #1e293b;
+  /*
+   * Material 3 (baseline purple): tonal surfaces carry the hierarchy, so the purple stays on
+   * actions and selection and the reds, ambers and greens keep their clinical meaning.
+   * Mapped onto shadcn's names: background = surface, card = surface-container-low,
+   * muted = surface-container-high, secondary/accent = secondary-container.
+   */
+  --background: #fef7ff;
+  --foreground: #1d1b20;
+  --surface: #fef7ff;
+  --card: #f7f2fa;
+  --card-foreground: #1d1b20;
+  --popover: #f3edf7;
+  --popover-foreground: #1d1b20;
+  --primary: #6750a4;
   --primary-foreground: #ffffff;
-  --secondary: #e2e8f0;
-  --secondary-foreground: #0f172a;
-  --muted: #e2e8f0;
-  --muted-foreground: #475569;
-  --accent: #e2e8f0;
-  --accent-foreground: #0f172a;
-  --destructive: #b91c1c;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #2563eb;
+  --secondary: #e8def8;
+  --secondary-foreground: #1d192b;
+  --muted: #ece6f0;
+  --muted-foreground: #49454f;
+  --accent: #e8def8;
+  --accent-foreground: #1d192b;
+  --destructive: #b3261e;
+  --border: #cac4d0;
+  --input: #79747e;
+  --ring: #6750a4;
+  --rail: #f3edf7;
+  --rail-indicator: #e8def8;
+  --rail-indicator-foreground: #1d192b;
+  --fab: #eaddff;
+  --fab-foreground: #21005d;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --status-active: #15803d;
-  --status-inactive: #92400e;
-  --status-deceased: #4b5563;
-  --severe: #b91c1c;
+  --status-active: #146c2e;
+  --status-inactive: #8c4a00;
+  --status-deceased: #5e5a66;
+  --severe: #b3261e;
   /* Section titles and other structure that should stand apart from content. */
-  --brand: #1d4ed8;
-  --radius: 0.625rem;
-  --sidebar: #1e293b;
-  --sidebar-foreground: #cbd5e1;
-  --sidebar-primary: #f8fafc;
-  --sidebar-primary-foreground: #1e293b;
-  --sidebar-accent: #334155;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #334155;
-  --sidebar-ring: #60a5fa;
+  --brand: #6750a4;
+  /* M3 shape scale: 12px medium (cards), 16px large; buttons and chips are fully rounded. */
+  --radius: 0.75rem;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+@media (prefers-color-scheme: dark) {
+  /* M3 baseline dark scheme. Status colours lighten so they keep their contrast on dark. */
+  :root {
+    color-scheme: dark;
+    --background: #141218;
+    --foreground: #e6e0e9;
+    --surface: #141218;
+    --card: #1d1b20;
+    --card-foreground: #e6e0e9;
+    --popover: #2b2930;
+    --popover-foreground: #e6e0e9;
+    --primary: #d0bcff;
+    --primary-foreground: #381e72;
+    --secondary: #4a4458;
+    --secondary-foreground: #e8def8;
+    --muted: #2b2930;
+    --muted-foreground: #cac4d0;
+    --accent: #4a4458;
+    --accent-foreground: #e8def8;
+    --destructive: #f2b8b5;
+    --border: #49454f;
+    --input: #938f99;
+    --ring: #d0bcff;
+    --rail: #1d1b20;
+    --rail-indicator: #4a4458;
+    --rail-indicator-foreground: #e8def8;
+    --fab: #4f378b;
+    --fab-foreground: #eaddff;
+    --status-active: #6dd58c;
+    --status-inactive: #ffb870;
+    --status-deceased: #aaa4b0;
+    --severe: #f2b8b5;
+    --brand: #d0bcff;
+  }
 }
 
 @layer base {
