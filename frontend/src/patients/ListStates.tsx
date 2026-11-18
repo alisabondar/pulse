@@ -38,7 +38,7 @@ export function ListError({
 }) {
   const forbidden = error instanceof ApiProblem && error.status === 403;
   return (
-    <div role="alert" className="rounded-xl border bg-card py-16 text-center">
+    <div role="alert" className="rounded-xl bg-card py-16 text-center">
       <p className="text-[15px] font-medium">
         {forbidden ? "You don't have permission to view this list" : `Couldn't load ${what}`}
       </p>

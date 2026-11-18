@@ -366,9 +366,12 @@ function ProblemNotice({
 
 function Fieldset({ legend, children }: { legend: string; children: React.ReactNode }) {
   return (
-    <fieldset className="space-y-3 rounded-xl border bg-card p-4">
-      <legend className="px-1 text-[13px] font-semibold text-brand">{legend}</legend>
-      <div className="grid gap-3 sm:grid-cols-2">{children}</div>
+    <fieldset className="rounded-xl bg-card p-5">
+      {/* Floated so the legend sits inside the card, not on its top edge. */}
+      <legend className="float-left mb-4 w-full text-[15px] font-semibold text-brand">
+        {legend}
+      </legend>
+      <div className="clear-left grid gap-x-4 gap-y-4 sm:grid-cols-2">{children}</div>
     </fieldset>
   );
 }

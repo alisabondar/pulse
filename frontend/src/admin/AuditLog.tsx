@@ -85,7 +85,7 @@ export function AuditLog() {
       ) : entries.length === 0 ? (
         <p className="text-[14px] text-muted-foreground">No entries yet</p>
       ) : (
-        <div className="rounded-xl border bg-card">
+        <div className="rounded-xl bg-card">
           <Table aria-label="Audit log">
             <TableHeader>
               <TableRow>
@@ -118,25 +118,33 @@ export function AuditLog() {
   );
 }
 
+/** What was touched, in words: "todays_visits" reads as "today's visits". */
+const ENTITIES: Record<string, string> = {
+  todays_visits: "today's visits",
+  patient_summary: "AI summary",
+};
+
 function EntryRow({ entry }: { entry: Entry }) {
   return (
     <TableRow>
       <TableCell className="pl-4 whitespace-nowrap tabular-nums">
-        {format(parseISO(entry.occurred_at), "MMM d, yyyy h:mm a")}
-      </TableCell>
-      <TableCell>
-        <span className="font-medium">{entry.actor_name}</span>{" "}
-        <span className="text-muted-foreground">
-          {describeRole({ role: entry.actor_role, credential: null })}
+        <span className="block">{format(parseISO(entry.occurred_at), "MMM d, yyyy")}</span>
+        <span className="block text-[12px] text-muted-foreground">
+          {format(parseISO(entry.occurred_at), "h:mm:ss a")}
         </span>
-        {entry.via_demo_persona && (
-          <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
-            Demo
-          </span>
-        )}
       </TableCell>
       <TableCell>
-        {VERBS[entry.action] ?? entry.action} {entry.entity.replaceAll("_", " ")}
+        <span className="block font-medium">{entry.actor_name}</span>
+        <span className="flex items-center gap-2 text-[12px] text-muted-foreground">
+          {describeRole({ role: entry.actor_role, credential: null })}
+          {entry.via_demo_persona && (
+            <span className="rounded-md bg-muted px-1.5 text-[11px] font-medium">Demo</span>
+          )}
+        </span>
+      </TableCell>
+      <TableCell>
+        {VERBS[entry.action] ?? entry.action}{" "}
+        {ENTITIES[entry.entity] ?? entry.entity.replaceAll("_", " ")}
       </TableCell>
       <TableCell className="text-muted-foreground">
         {entry.changed_fields.length > 0 ? entry.changed_fields.join(", ") : "—"}

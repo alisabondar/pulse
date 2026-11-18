@@ -112,7 +112,7 @@ function RecordVitals({ patientId, onDone }: { patientId: string; onDone: () => 
     <Form {...form}>
       <form
         aria-label="Record vitals"
-        className="space-y-3 rounded-xl border bg-card p-4"
+        className="space-y-3 rounded-xl bg-card p-4"
         onSubmit={(event) => void submit(event)}
       >
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -164,7 +164,7 @@ function VitalsTable({ items }: { items: Vitals[] }) {
     );
   };
   return (
-    <div className="rounded-xl border bg-card">
+    <div className="rounded-xl bg-card">
       <Table aria-label="Vitals">
         <TableHeader>
           <TableRow>
@@ -232,6 +232,7 @@ function LatestVitals({ latest }: { latest: Vitals }) {
         {format(parseISO(latest.taken_at), "MMM d, yyyy h:mm a")} · {latest.recorded_by_name}
       </p>
       <Fields
+        wide
         items={[
           reading(
             "Blood pressure",

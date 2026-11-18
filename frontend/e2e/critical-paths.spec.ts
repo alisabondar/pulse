@@ -150,3 +150,20 @@ test("the chart opens on an AI summary labelled for verification", async ({ page
   const summary = page.getByRole("region", { name: "AI summary" });
   await expect(summary).toContainText("AI-generated: verify before clinical use");
 });
+
+test("the app bar search opens a chart, and what was typed never reaches the URL", async ({
+  page,
+}) => {
+  await openApp(page);
+  const search = page.getByRole("combobox", { name: "Find a patient" });
+
+  await search.fill("harv");
+  await page
+    .getByRole("option", { name: /Harvey/ })
+    .first()
+    .click();
+
+  await expect(page.getByRole("region", { name: "Patient" })).toContainText("Harvey");
+  expect(page.url().toLowerCase()).not.toContain("harv");
+  await expect(search).toHaveValue("");
+});

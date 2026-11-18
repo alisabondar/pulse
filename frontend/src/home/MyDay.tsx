@@ -2,8 +2,6 @@ import { format, parseISO } from "date-fns";
 import { Fragment, useState } from "react";
 import { Link } from "react-router";
 
-import { api } from "@/api";
-import { queryKeys, useApiQuery } from "@/api/queries";
 import type { components } from "@/api/schema";
 import { useCurrentUser } from "@/auth/context";
 import { hasCareTeam } from "@/auth/roles";
@@ -15,19 +13,11 @@ import { cn } from "@/lib/utils";
 import { EmptyState, ListError } from "@/patients/ListStates";
 import { ScopeToggle } from "@/patients/ScopeToggle";
 
+import { useTodayVisits, VISIT_STATUS } from "./useTodayVisits";
+
 type Visit = components["schemas"]["ScheduledVisitOut"];
 type VisitStatus = Visit["status"];
 type Scope = components["schemas"]["Scope"];
-
-const SCHEDULE_REFRESH_MS = 60_000;
-
-const STATUS: Record<VisitStatus, { label: string; style: string }> = {
-  scheduled: { label: "Scheduled", style: "bg-muted text-muted-foreground" },
-  checked_in: { label: "Checked in", style: "bg-primary text-primary-foreground" },
-  completed: { label: "Completed", style: "bg-status-active/12 text-status-active" },
-  no_show: { label: "No-show", style: "bg-status-inactive/12 text-status-inactive" },
-  cancelled: { label: "Cancelled", style: "bg-muted text-muted-foreground line-through" },
-};
 
 function greeting(now: Date): string {
   const hour = now.getHours();
@@ -40,13 +30,7 @@ export function MyDay() {
   // Care-team roles start with their own schedule; front desk runs the whole practice's day.
   const [scope, setScope] = useState<Scope>(careTeam ? "my" : "all");
   const now = useNow();
-  // Keyed by date, so a page left open past midnight moves on to the new day.
-  const day = useApiQuery(
-    queryKeys.visits.today(scope, format(now, "yyyy-MM-dd")),
-    (signal) => api.GET("/api/v1/visits/today", { params: { query: { scope } }, signal }),
-    // Other staff check patients in and out; keep the schedule current.
-    { refetchInterval: SCHEDULE_REFRESH_MS, keepPrevious: true },
-  );
+  const day = useTodayVisits(scope);
 
   return (
     <section className="space-y-6">
@@ -108,7 +92,7 @@ function AtAGlance({ visits }: { visits: Visit[] | undefined }) {
 
 function Stat({ label, value }: { label: string; value: number | undefined }) {
   return (
-    <div className="rounded-xl border bg-card px-4 py-3">
+    <div className="rounded-xl bg-card px-4 py-3">
       <span className="block text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </span>{" "}
@@ -155,13 +139,13 @@ function NowLine({ now }: { now: Date }) {
 
 function VisitRow({ visit, showProvider }: { visit: Visit; showProvider: boolean }) {
   const { patient } = visit;
-  const status = STATUS[visit.status];
+  const status = VISIT_STATUS[visit.status];
   // The whole card opens the chart: a bigger target than a name, and one stop per visit.
   return (
     <li>
       <Link
         to={`/patients/${patient.id}`}
-        className="flex items-center gap-4 rounded-xl border bg-card px-4 py-3 transition-colors hover:border-brand/50 hover:bg-muted/40 focus-visible:outline-2 focus-visible:outline-ring"
+        className="flex items-center gap-4 rounded-xl bg-card px-4 py-3 transition-colors hover:bg-secondary/70 focus-visible:outline-2 focus-visible:outline-ring"
       >
         <time
           dateTime={visit.scheduled_at}
