@@ -1,10 +1,11 @@
 import { ContentSkeleton } from "@/components/PageSkeleton";
 import { Toaster } from "@/components/ui/sonner";
-import { CalendarDays, LoaderCircle, ScrollText, ShieldCheck, UserPlus, Users } from "lucide-react";
+import { CalendarDays, LoaderCircle, ScrollText, UserPlus, Users } from "lucide-react";
 import { Suspense } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 
 import { type Permission, useCurrentUser } from "@/auth/context";
+import { PulseMark } from "@/components/PulseMark";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -99,9 +100,9 @@ export function Shell() {
 function NavigationRail({ sections, path }: { sections: typeof NAV; path: string }) {
   return (
     <aside className="sticky top-0 flex h-svh w-20 shrink-0 flex-col items-center gap-6 bg-rail py-5">
-      <span className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground">
-        <ShieldCheck className="size-6" aria-hidden />
-        <span className="sr-only">CipherChart</span>
+      <span>
+        <PulseMark />
+        <span className="sr-only">Pulse</span>
       </span>
       <nav aria-label="Main">
         <ul className="flex flex-col items-center gap-3">

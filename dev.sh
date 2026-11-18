@@ -89,7 +89,7 @@ reset() {
   ensure_env
   echo "Wiping the database and encryption keys together..."
   compose down
-  docker volume rm -f patient-dashboard_pgdata patient-dashboard_keys > /dev/null
+  docker volume rm -f pulse_pgdata pulse_keys > /dev/null
   require_free_ports
   SEED_COUNT="$count" compose up --build -d
   wait_until_up

@@ -58,7 +58,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         yield
         await app.state.engine.dispose()
 
-    app = FastAPI(title="Patient Dashboard API", lifespan=lifespan)
+    app = FastAPI(title="Pulse API", lifespan=lifespan)
     app.state.settings = settings
     key = settings.gemini_api_key.get_secret_value() if settings.gemini_api_key else None
     app.state.gateway = gateway_from_settings(
