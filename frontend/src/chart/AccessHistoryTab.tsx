@@ -23,7 +23,7 @@ export function AccessHistoryTab({ patientId }: { patientId: string }) {
   );
   if (!log.data) return <Skeleton className="h-32 w-full rounded-xl" />;
   return (
-    <div className="rounded-xl border bg-card">
+    <div className="rounded-xl bg-card">
       <Table aria-label="Access history">
         <TableHeader>
           <TableRow>

@@ -1,4 +1,5 @@
 import { format, parseISO } from "date-fns";
+import { Lock } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -23,16 +24,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
 import { useChartNotes } from "./chartData";
+import { byDraftThenNewest } from "./noteOrder";
 import { WriteError } from "./WriteError";
 
 type Note = components["schemas"]["NoteOut"];
 
-export function NotesTab({ patientId }: { patientId: string }) {
+export function NotesTab({
+  patientId,
+  startComposing = false,
+}: {
+  patientId: string;
+  /** Open on a blank note, as when the chart's New note button brought the user here. */
+  startComposing?: boolean;
+}) {
   const { me } = useCurrentUser();
   const canWrite = usePermission("WRITE_NOTES_AND_VITALS");
   const notes = useChartNotes(patientId, true);
   // The draft being opened: a new one, or an existing draft to keep writing.
-  const [composing, setComposing] = useState<{ id: string | null; content: string } | null>(null);
+  const [composing, setComposing] = useState<{ id: string | null; content: string } | null>(
+    startComposing && canWrite ? { id: null, content: "" } : null,
+  );
   const [deleting, setDeleting] = useState<Note | null>(null);
 
   return (
@@ -51,10 +62,10 @@ export function NotesTab({ patientId }: { patientId: string }) {
       {notes.data ? (
         notes.data.items.length > 0 ? (
           <ul aria-label="Notes" className="space-y-3">
-            {notes.data.items.map((note) => {
+            {[...notes.data.items].sort(byDraftThenNewest).map((note) => {
               const myDraft = note.status === "draft" && note.author_id === me.id;
               return (
-                <li key={note.id} className="space-y-2 rounded-xl border bg-card p-4">
+                <li key={note.id} className="space-y-2 rounded-xl bg-card p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
                     <span>
                       <span className="font-medium">{note.author_name}</span>
@@ -67,9 +78,14 @@ export function NotesTab({ patientId }: { patientId: string }) {
                         )}
                       </span>
                     </span>
-                    {note.status === "draft" && (
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[12px] font-medium">
+                    {note.status === "draft" ? (
+                      <span className="rounded-md bg-status-inactive/12 px-2 py-0.5 text-[12px] font-medium text-status-inactive">
                         Draft
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[12px] text-muted-foreground">
+                        <Lock className="size-3.5" aria-hidden />
+                        Finalized
                       </span>
                     )}
                   </div>
@@ -175,7 +191,7 @@ function Composer({
     <Form {...form}>
       <form
         aria-label="Note composer"
-        className="space-y-3 rounded-xl border bg-card p-4"
+        className="space-y-3 rounded-xl bg-card p-4"
         onSubmit={(event) => void onFinalize(event)}
       >
         <FormField
@@ -188,6 +204,8 @@ function Composer({
                   {...field}
                   aria-label="Note"
                   rows={6}
+                  // Opening the composer is the decision to write: put the cursor there.
+                  autoFocus
                   placeholder="Subjective, objective, assessment, plan…"
                 />
               </FormControl>

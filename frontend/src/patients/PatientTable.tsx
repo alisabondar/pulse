@@ -1,9 +1,10 @@
-import { formatDistanceToNowStrict } from "date-fns";
+import { format, formatDistanceStrict as formatDistance } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { memo } from "react";
 import { useNavigate } from "react-router";
 
 import type { components } from "@/api/schema";
+import { useNow } from "@/hooks/useNow";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -52,7 +53,7 @@ export const PatientTable = memo(function PatientTable({
   return (
     <div
       aria-busy={refreshing}
-      className={cn("rounded-xl border bg-card transition-opacity", refreshing && "opacity-60")}
+      className={cn("rounded-xl bg-card transition-opacity", refreshing && "opacity-60")}
     >
       <Table>
         <TableHeader>
@@ -124,7 +125,7 @@ export const PatientTable = memo(function PatientTable({
 
 export function PatientTableSkeleton() {
   return (
-    <div role="status" aria-label="Loading patients" className="rounded-xl border bg-card p-4">
+    <div role="status" aria-label="Loading patients" className="rounded-xl bg-card p-4">
       <div className="space-y-4">
         {Array.from({ length: 8 }, (_, i) => (
           <div key={i} className="flex items-center gap-6">
@@ -174,11 +175,16 @@ function SortableHead({
 }
 
 function LastVisit({ at }: { at: string | null }) {
+  const now = useNow();
   if (!at) return <span className="text-muted-foreground">No visits</span>;
   const date = new Date(at);
+  // A visit booked later today counts as the latest one; say when, not "in 9 hours".
+  const upcoming = date > now;
   return (
     <time dateTime={at} title={date.toLocaleDateString()}>
-      {formatDistanceToNowStrict(date, { addSuffix: true })}
+      {upcoming
+        ? `Today ${format(date, "h:mm a")}`
+        : formatDistance(date, now, { addSuffix: true })}
     </time>
   );
 }

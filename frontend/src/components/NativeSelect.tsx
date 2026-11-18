@@ -10,7 +10,7 @@ export function NativeSelect({ className, ...props }: ComponentProps<"select">) 
       <select
         {...props}
         className={cn(
-          "h-9 w-full appearance-none rounded-lg border bg-card pr-9 pl-3 text-[14px] text-foreground",
+          "h-11 w-full appearance-none rounded-md border border-input bg-transparent pr-10 pl-3.5 text-[14px] text-foreground",
           "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
           className,
         )}

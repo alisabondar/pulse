@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { api } from "@/api";
 import { apiQueryFn, queryKeys, useApiQuery } from "@/api/queries";
@@ -13,6 +13,7 @@ import { PatientTable, PatientTableSkeleton } from "./PatientTable";
 import { PatientSearchFields } from "./PatientSearchFields";
 import { QuickFilters } from "./QuickFilters";
 import { ScopeToggle } from "./ScopeToggle";
+import { searchHandoff } from "./searchHandoff";
 import { usePatientListParams } from "./usePatientListParams";
 import { usePatientSearch } from "./usePatientSearch";
 
@@ -29,8 +30,11 @@ export function PatientList() {
     [careTeam, urlParams],
   );
 
+  // "See all results" from the app bar's search arrives already typed in.
+  const [handedOver] = useState(() => searchHandoff.take() ?? "");
   // A new search means a new result set, so start it from the first page.
   const search = usePatientSearch({
+    initialText: handedOver,
     onEdit: () => {
       if (params.page !== 1) setParams({ page: 1 });
     },
