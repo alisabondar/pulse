@@ -1,6 +1,6 @@
 # The whole app: ./dev.sh starts it (or `docker compose up --build`).
 # Order: db (healthy) → keys-init → migrate → seed → api (healthy) → web.
-name: patient-dashboard
+name: pulse
 
 x-backend: &backend
   build: ./backend

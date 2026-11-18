@@ -1,7 +1,7 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = "Patient dashboard API"
+description = "Pulse API"
 authors = [
     { name = "Alisa Bondar", email = "alisa.k.bondar@gmail.com" }
 ]

@@ -7,13 +7,11 @@ them needs a rewrite.
 
 The items with the most value for clinicians, roughly in order.
 
-- **Vitals trends and charts:** line charts of BP, heart rate, weight, and the rest over time on
-  the Vitals tab, with the change against the last few visits called out ("systolic up 12% over
-  three visits") and readings outside the usual range marked. Computed from stored vitals in the
-  app, so it's exact and needs no AI.
-- **Cmd+K patient search:** a command palette available on every page, suggesting patients as you
-  type with the same rules as the Patients search (3+ letters of the last name, an MRN, or a DOB;
-  terms never in the URL). The `command` component is already installed.
+- **More vitals trends:** the overview charts blood pressure; add heart rate, weight, and the
+  rest on the Vitals tab, with the change against the last few visits called out ("systolic up 12%
+  over three visits"). Computed from stored vitals in the app, so it's exact and needs no AI.
+- **Search by date of birth from anywhere:** the app bar search takes a last name or an MRN; add
+  the DOB field the Patients page already has.
 - **Autosave with conflict handling:** debounced saves, a saving indicator, and a prompt when
   someone else changed the record. Edits already carry `base_version`, and a stale save returns
   `409` with the current record.
@@ -72,3 +70,6 @@ The items with the most value for clinicians, roughly in order.
   the browser and on the server, with duplicate, conflict, and network-failure handling.
 - **Admin audit log:** the practice-wide trail in the app, filterable by person, with field names
   only.
+- **Material 3 redesign:** icon navigation rail, app bar patient search (`/`), today's visits above
+  the chart, a one-screen overview with a blood pressure trend, a New note button, iPad layouts,
+  and a dark theme.
